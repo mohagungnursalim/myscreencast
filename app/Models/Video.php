@@ -8,4 +8,11 @@ use Illuminate\Database\Eloquent\Model;
 class Video extends Model
 {
     use HasFactory;
+
+    protected $table = 'videos';
+    protected $guarded = [];
+    protected $casts = [
+        'created_at' => 'datetime:d-m-Y',
+        'durasi' => 'datetime:H-i'
+    ];
 }

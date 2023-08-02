@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\Video;
+use App\Models\Kelas;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 
 class VideoController extends Controller
@@ -12,7 +14,11 @@ class VideoController extends Controller
      */
     public function index()
     {
-        //
+       
+        $videos = Video::latest()->paginate(10);
+        $kelas = Kelas::select('judul')->latest()->get();
+
+        return view('dashboard.video.index',compact('videos','kelas'));
     }
 
     /**
@@ -28,7 +34,19 @@ class VideoController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $validatedData = $request->validate([
+            'kelas' => 'exists:kelas,judul',
+            'judul' => 'required',
+            'deskripsi' => 'required',
+            'video' => 'required',
+            'durasi' => 'required|date_format:H:i'      
+        ]);
+
+        
+        Video::create($validatedData);
+       
+        return redirect('/video')->with(['success' => 'Video berhasil ditambahkan']);
+   
     }
 
     /**
@@ -50,16 +68,35 @@ class VideoController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Video $video)
+    public function update(Request $request,$id)
     {
-        //
+
+        $video = Video::find($id);
+
+        $validatedData = $request->validate([
+            'kelas' => 'exists:kelas,judul',
+            'judul' => 'required',
+            'deskripsi' => 'required',
+            'video' => 'required',
+            'durasi' => 'required|date_format:H:i'      
+        ]);
+
+        
+        $video->update($validatedData);
+       
+        return redirect('/video')->with(['success' => 'Video berhasil diperbaharui!']);
+   
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Video $video)
+    public function destroy($id)
     {
-        //
+        $video = Video::find($id);
+
+        $video->delete();
+
+        return redirect('/video')->with(['success' => 'Video berhasil dihapus!']);
     }
 }

@@ -3,6 +3,9 @@
         <h2 class="font-semibold text-xl text-gray-800 leading-tight">
             {{ __('Dashboard') }}
         </h2>
+        @section('judul')
+        Dashboard
+        @endsection
     </x-slot>
 
     <div class="py-12">
