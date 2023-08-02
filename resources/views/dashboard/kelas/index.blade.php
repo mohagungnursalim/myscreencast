@@ -90,7 +90,25 @@
                                                                     {{ $kls->created_at->format('d-M,Y') }}
                                                                 </td>
                                                                 <td class="px-6 py-4">
-                                                                    <button>hapus</button></td>
+
+                                                                    <!-- Modal toggle -->
+                                                                    <button data-modal-target="editmodal{{ $kls->id }}"
+                                                                        data-modal-toggle="editmodal{{ $kls->id }}"
+                                                                        class="bg-transparent border border-gray-500 hover:border-green-500 text-gray-500 hover:text-green-500 font-bold py-2 px-4 rounded-full mb-2"
+                                                                        type="button">
+                                                                        Edit
+                                                                    </button>
+                                                                    <button
+                                                                        data-modal-target="deletemodal{{ $kls->id }}"
+                                                                        data-modal-toggle="deletemodal{{ $kls->id }}"
+                                                                        class="bg-transparent border border-gray-500 hover:border-red-500 text-gray-500 hover:text-red-500 font-bold py-2 px-4 rounded-full mb-2"
+                                                                        type="button">
+                                                                        Delete
+                                                                    </button>
+
+                                                                </td>
+
+
                                                             </tr>
                                                             @endforeach
                                                             @else
@@ -122,7 +140,7 @@
 </x-app-layout>
 
 
-<!--Modal-->
+<!--Input Modal-->
 <div id="modal-input"
     class="modal opacity-0 pointer-events-none fixed w-full h-full top-0 left-0 flex items-center justify-center">
     <div class="modal-overlay absolute w-full h-full bg-gray-900 opacity-50"></div>
@@ -166,12 +184,12 @@
                         class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                         placeholder="Masukan judul..">
 
-                        @error('judul')
-                        <p class="text-red-600 dark:text-red-500">{{ $message }}</p>
-                        @enderror
-                  </div>
-                        
-                
+                    @error('judul')
+                    <p class="text-red-600 dark:text-red-500">{{ $message }}</p>
+                    @enderror
+                </div>
+
+
                 <div class="mb-3">
 
                     <label for="message"
@@ -180,9 +198,9 @@
                         class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                         placeholder="Masukan deskripsi.."></textarea>
 
-                        @error('deskripsi')
-                        <p class="text-red-600 dark:text-red-500">{{ $message }}</p>
-                        @enderror
+                    @error('deskripsi')
+                    <p class="text-red-600 dark:text-red-500">{{ $message }}</p>
+                    @enderror
                 </div>
                 <div class="mb-3">
                     <label for="file"
@@ -193,10 +211,10 @@
 
                     <input type="file" onchange="previewImage()" id="image" name="thumbnail"
                         class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
-                        @error('thumbnail')
-                        <p class="text-red-600 dark:text-red-500">{{ $message }}</p>
-                        @enderror
-                      </div>
+                    @error('thumbnail')
+                    <p class="text-red-600 dark:text-red-500">{{ $message }}</p>
+                    @enderror
+                </div>
                 <div class="flex flex-col items-center">
                     <button type="submit"
                         class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Submit</button>
@@ -217,6 +235,114 @@
     </div>
 </div>
 
+{{-- Edit Modal --}}
+@foreach ($kelas as $kls )
+<div id="editmodal{{ $kls->id }}" tabindex="-1" aria-hidden="true"
+    class="fixed top-0 left-0 right-0 z-50 hidden w-full p-4 overflow-x-hidden overflow-y-auto md:inset-0 h-[calc(100%-1rem)] max-h-full">
+    <div class="relative w-full max-w-md max-h-full">
+        <!-- Modal content -->
+        <div class="relative bg-white rounded-lg shadow dark:bg-gray-700">
+            <button type="button"
+                class="absolute top-3 right-2.5 text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ml-auto inline-flex justify-center items-center dark:hover:bg-gray-600 dark:hover:text-white"
+                data-modal-hide="editmodal{{ $kls->id }}">
+                <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none"
+                    viewBox="0 0 14 14">
+                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6" />
+                </svg>
+                <span class="sr-only">Close modal</span>
+            </button>
+            <div class="px-6 py-6 lg:px-8">
+                <h2 class="mb-2 text-xl font-medium text-gray-900 dark:text-white">Edit kelas</h2>
+                <form action="{{ route('kelas.update',$kls->id) }}" method="POST" enctype="multipart/form-data">
+                    @csrf
+                    @method('put')
+                    <div class="mb-3">
+                        <label for="judul"
+                            class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Judul</label>
+                        <input type="text" name="judul"
+                            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                            placeholder="Masukan judul.." value="{{ $kls->judul }}">
+
+                        @error('judul')
+                        <p class="text-red-600 dark:text-red-500">{{ $message }}</p>
+                        @enderror
+                    </div>
+
+
+                    <div class="mb-3">
+
+                        <label for="message"
+                            class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Deskripsi</label>
+                        <textarea name="deskripsi" rows="4"
+                            class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                            placeholder="Masukan deskripsi..">{{ $kls->deskripsi }}</textarea>
+
+                        @error('deskripsi')
+                        <p class="text-red-600 dark:text-red-500">{{ $message }}</p>
+                        @enderror
+                    </div>
+                    <div class="mb-3">
+                        <label for="file"
+                            class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Thumbnail</label>
+
+                        @if ($kls->thumbnail)
+                        <img width="140px" class="h-auto max-w-lg mx-auto img-preview"
+                            src="{{ asset('storage/'.$kls->thumbnail) }}" alt="Tidak ada image">
+                        @else
+                        <img width="140px" class="h-auto max-w-lg mx-auto img-preview" src="" alt="Tidak ada image">
+
+                        @endif
+
+                        <input type="file" onchange="previewImage()" id="image" name="thumbnail" value="{{ $kls->thumbnail }}"
+                            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                        @error('thumbnail')
+                        <p class="text-red-600 dark:text-red-500">{{ $message }}</p>
+                        @enderror
+                    </div>
+                    <div class="flex flex-col items-center">
+                        <button type="submit"
+                            class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Submit</button>
+
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+@endforeach
+
+{{-- Modal verifikasi delete --}}
+@foreach ($kelas as $kls)
+  <div id="deletemodal{{ $kls->id }}" tabindex="-1" class="fixed top-0 left-0 right-0 z-50 hidden p-4 overflow-x-hidden overflow-y-auto md:inset-0 h-[calc(100%-1rem)] max-h-full">
+      <div class="relative w-full max-w-md max-h-full">
+          <div class="relative bg-white rounded-lg shadow dark:bg-gray-700">
+              <button type="button" class="absolute top-3 right-2.5 text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ml-auto inline-flex justify-center items-center dark:hover:bg-gray-600 dark:hover:text-white" data-modal-hide="deletemodal{{ $kls->id }}">
+                  <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
+                      <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"/>
+                  </svg>
+                  <span class="sr-only">Close modal</span>
+              </button>
+              <div class="p-6 text-center">
+                  <svg class="mx-auto mb-4 text-gray-400 w-12 h-12 dark:text-gray-200" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20">
+                      <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 11V6m0 8h.01M19 10a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/>
+                  </svg>
+                  <h3 class="mb-5 text-lg font-normal text-gray-500 dark:text-gray-400">Are you sure you want to delete this class?</h3>
+                  <form action="{{ route('kelas.destroy',$kls->id) }}" method="post">
+                    @csrf
+                    @method('delete')
+                  <button  type="submit" class="text-white bg-red-600 hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-red-300 dark:focus:ring-red-800 font-medium rounded-lg text-sm inline-flex items-center px-5 py-2.5 text-center mr-2">
+                      Yes, I'm sure
+                  </button>
+                  <button data-modal-hide="deletemodal{{ $kls->id }}" type="button" class="text-gray-500 bg-white hover:bg-gray-100 focus:ring-4 focus:outline-none focus:ring-gray-200 rounded-lg border border-gray-200 text-sm font-medium px-5 py-2.5 hover:text-gray-900 focus:z-10 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-500 dark:hover:text-white dark:hover:bg-gray-600 dark:focus:ring-gray-600">No, cancel</button>
+             
+                    </form>
+                  </div>
+          </div>
+      </div>
+  </div>
+@endforeach
+
 {{-- hide alert exit button --}}
 <script>
     function closeAlert(event) {
@@ -229,7 +355,7 @@
 
 </script>
 {{-- <script>
-  window.setTimeout(function() {
+    window.setTimeout(function() {
     $(".alert").fadeTo(500, 0).slideUp(500, function(){
       $(this).remove(); 
     });
@@ -259,7 +385,7 @@
 {{-- Jika ada error,tampilkan kembali modal --}}
 @if ($errors->any())
 <script>
-     var openmodal = document.querySelectorAll('.modal-open')
+    var openmodal = document.querySelectorAll('.modal-open')
     for (var i = 0; i < openmodal.length; i++) {
         openmodal[i].addEventListener('click', function (event) {
             event.preventDefault()

@@ -66,16 +66,33 @@ class KelasController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Kelas $kelas)
+    public function update(Request $request,$id)
     {
-        //
+       $kelas = Kelas::find($id);
+
+        $validatedData = $request->validate([
+            'judul' => 'required',
+            'deskripsi' => 'required'     
+        ]);
+
+        if($request->file('thumbnail')){
+            $validatedData['thumbnail'] = $request->file('thumbnail')->store('kelas-thumbnail','public');
+        }
+
+        $kelas->update($validatedData);
+       
+        return redirect('/kelas')->with(['success' => 'Kelas berhasil diperbaharui!']);
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Kelas $kelas)
+    public function destroy($id)
     {
-        //
+        $kelas = Kelas::find($id);
+
+        $kelas->delete();
+
+        return redirect('/kelas')->with(['success' => 'Kelas berhasil dihapus!']);
     }
 }
